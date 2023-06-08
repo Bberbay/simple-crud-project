@@ -1,18 +1,22 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app" style="width: 85%" class="ml-5">
+    <HomePage />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import HomePage from './components/HomePage.vue'
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
+    name: 'App',
+    data() {
+        return {
+            selectedList: this.$store.state.selectedItem,
+        }
+    },
+    components: {
+        HomePage,
+    },
 }
 </script>
 
