@@ -127,20 +127,7 @@ export default {
         $(document).ready(function () {
             $('#example').DataTable();
         });
-        axios.get("https://6479c08fa455e257fa63b224.mockapi.io/products")
-            .then(response => {
-                this.products = response.data.map(product => {
-                    return {
-                        name: product.name,
-                        price: product.price,
-                        createDate: product.createDate,
-                        id: product.id,
-                    };
-                });
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        this.fetchProducts();
     },
     destroyed() {
         $(document).ready(function () {
@@ -149,16 +136,11 @@ export default {
     },
     methods: {
         onSubmit() {
-            axios.post("https://6479c08fa455e257fa63b224.mockapi.io/products", this.formData)
+            axios.post("/products", this.formData)
                 .then(response => {
                     console.log("POST Success");
                     console.log(response.data);
-                    this.formData = {
-                        name: '',
-                        price: null,
-                        createDate: '',
-                        id: null,
-                    }
+                    this.clearFormData();
                     this.fetchProducts();
                 })
                 .catch(error => {
@@ -167,7 +149,7 @@ export default {
             this.show = false;
         },
         deleteProduct(productId) {
-            axios.delete(`https://6479c08fa455e257fa63b224.mockapi.io/products/${productId}`)
+            axios.delete(`/products/${productId}`)
                 .then(response => {
                     console.log("Delete Success",response);
                     this.fetchProducts();
@@ -182,16 +164,11 @@ export default {
             this.editProductParam = productId;
         },
         editProductModal(productId) {
-            axios.put(`https://6479c08fa455e257fa63b224.mockapi.io/products/${productId}`, this.formData)
+            axios.put(`/products/${productId}`, this.formData)
                 .then(response => {
                     console.log("Update Success");
                     console.log(response.data);
-                    this.formData = {
-                        name: '',
-                        price: null,
-                        createDate: '',
-                        id: null,
-                    }
+                    this.clearFormData();
                     this.show = false;
                     this.fetchProducts();
                 })
@@ -201,7 +178,7 @@ export default {
 
         },
     fetchProducts() {
-        axios.get("https://6479c08fa455e257fa63b224.mockapi.io/products")
+        axios.get("/products")
             .then(response => {
                 this.products = response.data.map(product => {
                     return {
@@ -215,7 +192,15 @@ export default {
             .catch(error => {
                 console.error(error);
             });
-    }
+    },
+        clearFormData(){
+            this.formData = {
+                name: '',
+                price: null,
+                createDate: '',
+                id: null,
+            }
+        }
     }
 }
 </script>

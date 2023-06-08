@@ -143,22 +143,7 @@ export default {
         $(document).ready(function () {
             $('#example').DataTable();
         });
-        axios.get("https://6479c08fa455e257fa63b224.mockapi.io/orders")
-            .then(response => {
-                this.orders = response.data.map(order => {
-                    return {
-                        id: order.id,
-                        orderDate: order.orderDate,
-                        description: order.description,
-                        paymentType: order.paymentType,
-                        orderDetails: order.orderDetails.join(","),
-                        customerName: order.customerName
-                    };
-                });
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        this.fetchProducts();
     },
     destroyed() {
         $(document).ready(function () {
@@ -168,7 +153,7 @@ export default {
     methods: {
         onSubmit(){
             this.formData.orderDetails = this.orderDetailsInput.split(',');
-            axios.post("https://6479c08fa455e257fa63b224.mockapi.io/orders",this.formData)
+            axios.post("/orders",this.formData)
                 .then(response =>{
                     console.log("POST Success");
                     console.log(response.data);
@@ -188,7 +173,7 @@ export default {
             this.show=false
         },
         deleteOrder(orderId) {
-            axios.delete(`https://6479c08fa455e257fa63b224.mockapi.io/orders/${orderId}`)
+            axios.delete(`/orders/${orderId}`)
                 .then(response =>{
                     console.log("Delete Success",response.data);
                     this.fetchProducts();
@@ -204,7 +189,7 @@ export default {
         },
         editOrderModal(orderId){
             this.formData.orderDetails = this.orderDetailsInput.split(',');
-                axios.put(`https://6479c08fa455e257fa63b224.mockapi.io/orders/${orderId}`,this.formData)
+                axios.put(`/orders/${orderId}`,this.formData)
                     .then(response=>{
                         console.log("Update Success");
                         console.log(response.data);
@@ -226,7 +211,7 @@ export default {
 
         },
         fetchProducts() {
-            axios.get("https://6479c08fa455e257fa63b224.mockapi.io/orders")
+            axios.get("/orders")
                 .then(response => {
                     this.orders = response.data.map(order => {
                         return {
