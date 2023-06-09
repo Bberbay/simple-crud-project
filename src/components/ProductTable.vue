@@ -36,7 +36,7 @@
             </tbody>
         </table>
         <div>
-            <b-button @click="show=true" variant="dark">Add Product</b-button>
+            <b-button @click="addProduct" variant="dark">Add Product</b-button>
             <form>
                 <b-modal
                     v-model="show"
@@ -138,21 +138,28 @@ export default {
         onSubmit() {
             axios.post("/products", this.formData)
                 .then(response => {
-                    console.log("POST Success");
-                    console.log(response.data);
+                    console.log(response);
+                    this.products.push(this.formData);
                     this.clearFormData();
-                    this.fetchProducts();
                 })
                 .catch(error => {
                     console.log(error)
                 });
             this.show = false;
         },
+        addProduct(){
+            this.show=true;
+            this.formActionTitle= 'Add'
+            this.clearFormData();
+        },
         deleteProduct(productId) {
             axios.delete(`/products/${productId}`)
                 .then(response => {
-                    console.log("Delete Success",response);
-                    this.fetchProducts();
+                    const index = this.products.findIndex(product => product.id === productId);
+                    if (index !== -1) {
+                        this.products.splice(index, 1);
+                    }
+                    console.log(response)
                 })
                 .catch(error => {
                     console.log(error)
@@ -162,6 +169,11 @@ export default {
             this.formActionTitle = 'Edit'
             this.show = true;
             this.editProductParam = productId;
+            const editedProducts = this.products.find(product=> product.id === productId);
+                this.formData.name = editedProducts.name;
+                this.formData.price = editedProducts.price;
+                this.formData.createDate = editedProducts.createDate;
+                this.formData.id = productId;
         },
         editProductModal(productId) {
             axios.put(`/products/${productId}`, this.formData)
@@ -175,24 +187,23 @@ export default {
                 .catch(error => {
                     console.log(error)
                 })
-
         },
-    fetchProducts() {
-        axios.get("/products")
-            .then(response => {
-                this.products = response.data.map(product => {
-                    return {
-                        name: product.name,
-                        price: product.price,
-                        createDate: product.createDate,
-                        id: product.id,
-                    };
+        fetchProducts() {
+            axios.get("/products")
+                .then(response => {
+                    this.products = response.data.map(product => {
+                        return {
+                            name: product.name,
+                            price: product.price,
+                            createDate: product.createDate,
+                            id: product.id,
+                        };
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
                 });
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    },
+        },
         clearFormData(){
             this.formData = {
                 name: '',

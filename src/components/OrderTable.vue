@@ -30,7 +30,7 @@
         </tr>
         </tbody>
     </table>
-            <b-button @click="show=true"  variant="dark">Add Order</b-button>
+            <b-button @click="addOrder"  variant="dark">Add Order</b-button>
         <div>
             <form>
                 <b-modal
@@ -155,28 +155,28 @@ export default {
             this.formData.orderDetails = this.orderDetailsInput.split(',');
             axios.post("/orders",this.formData)
                 .then(response =>{
-                    console.log("POST Success");
                     console.log(response.data);
-                    this.formData= {
-                        id: null,
-                        orderDate: '',
-                        description: '',
-                        paymentType: '',
-                        customerName: '',
-                    };
-                    this.orderDetailsInput= '';
-                    this.fetchProducts();
+                    this.orders.push(this.formData);
+                    this.clearFormData();
                 })
                 .catch(error=>{
                     console.log(error);
                 })
             this.show=false
         },
+        addOrder(){
+            this.show = true;
+            this.formActionTitle = 'Add'
+            this.clearFormData();
+        },
         deleteOrder(orderId) {
             axios.delete(`/orders/${orderId}`)
                 .then(response =>{
+                    const index = this.orders.findIndex(order => order.id === orderId);
+                    if (index !== -1){
+                        this.orders.splice(index,1);
+                    }
                     console.log("Delete Success",response.data);
-                    this.fetchProducts();
                 })
                 .catch(error=>{
                     console.log(error);
@@ -186,6 +186,14 @@ export default {
             this.formActionTitle = 'Edit';
             this.show = true;
             this.editOrderParam = orderId;
+            const editedOrder = this.orders.find(order => order.id === orderId)
+            this.formData.id = editedOrder.id;
+            this.formData.orderDate = editedOrder.orderDate;
+            this.formData.description = editedOrder.description;
+            this.formData.paymentType = editedOrder.paymentType;
+            this.orderDetailsInput = editedOrder.orderDetails;
+            this.formData.customerName = editedOrder.customerName;
+
         },
         editOrderModal(orderId){
             this.formData.orderDetails = this.orderDetailsInput.split(',');
@@ -193,23 +201,14 @@ export default {
                     .then(response=>{
                         console.log("Update Success");
                         console.log(response.data);
-                        this.formData = {
-                            id: null,
-                            orderDate: '',
-                            description: '',
-                            paymentType: '',
-                            orderDetails: [],
-                            customerName: ''
-                        };
-                        this.orderDetailsInput = '';
+                        this.clearFormData();
                         this.show=false;
                         this.fetchProducts();
                 })
                     .catch(error=>{
                         console.log(error)
                     })
-
-        },
+            },
         fetchProducts() {
             axios.get("/orders")
                 .then(response => {
@@ -227,6 +226,16 @@ export default {
                 .catch(error => {
                     console.error(error);
                 });
+        },
+        clearFormData() {
+            this.formData = {
+                id : null,
+                orderDate: '',
+                description: '',
+                paymentType: '',
+                customerName: ''
+            };
+            this.orderDetailsInput = ''
         }
     }
 }
