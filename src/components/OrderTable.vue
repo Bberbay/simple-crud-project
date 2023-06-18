@@ -123,11 +123,11 @@ export default {
             editOrderParam: null,
             titles:{
                 idTitle : "ID",
-                orderDate : "Order Date",
+                orderDate : "Car Showcase",
                 Description : "Description",
-                paymentType : "Payment Type",
-                orderDetails : "Order Details",
-                customerName : "Customer Name",
+                paymentType : "Price",
+                orderDetails : "Car Properties",
+                customerName : "Owner Name",
             },
             formData: {
                 id: null,
